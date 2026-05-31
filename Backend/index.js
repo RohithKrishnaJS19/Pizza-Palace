@@ -281,6 +281,8 @@ app.post("/orderdetails", async function (req, res) {
 
 })
 
-app.listen(process.env.PORT, function () {
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, function () {
     console.log("Server Started...")
 })
