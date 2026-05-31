@@ -8,28 +8,34 @@ import { useNavigate } from "react-router-dom";
 
 function Home() {
     const API_URL = import.meta.env.VITE_API_URL
+    const ADMIN = import.meta.env.VITE_ADMIN_UID
     const navigate = useNavigate()
     const [token, settoken] = useState("")
+    const [isAdmin, setisAdmin] = useState(false)
     useEffect(function () {
         onAuthStateChanged(auth, function (user) {
             if (!user) {
                 navigate("/")
                 return;
             }
+            if (user.uid === ADMIN) {
+                setisAdmin(true)
+            }
             setusername(user.displayName)
             setuseremail(user.email)
             settoken(user.accessToken)
+
         })
     }, [])
 
     useEffect(function () {
-        if(!token) return
+        if (!token) return
         async function getdata() {
-            const productdetails = await axios.get(`${API_URL}/productdetails`)
+            const productdetails = isAdmin ? await axios.get(`${API_URL}/adminproductdetails`) : await axios.get(`${API_URL}/productdetails`)
             setproducts(productdetails.data)
             setfilterproducts(productdetails.data)
 
-            const cartproductdetails = await axios.post(`${API_URL}/cartproductdetails`,{token:token})
+            const cartproductdetails = await axios.post(`${API_URL}/cartproductdetails`, { token: token })
 
             if (cartproductdetails.data == "Invalid Token") {
                 navigate("/")
@@ -39,7 +45,7 @@ function Home() {
             }
         }
         getdata()
-    }, [token,API_URL]
+    }, [token, API_URL, isAdmin]
     )
 
     const [products, setproducts] = useState([])
@@ -93,7 +99,7 @@ function Home() {
         await axios.post(`${API_URL}/remove`, { token: token, product: props }).
             then(async function (retdata) {
                 if (retdata) {
-                    const cartproductdetails = await axios.post(`${API_URL}/cartproductdetails`,{token:token})
+                    const cartproductdetails = await axios.post(`${API_URL}/cartproductdetails`, { token: token })
                     setcartproducts(cartproductdetails.data)
                 }
             })
@@ -104,7 +110,7 @@ function Home() {
         axios.post(`${API_URL}/quantityinc`, { token: token, product: props }).
             then(async function (retdata) {
                 if (retdata) {
-                    const cartproductdetails = await axios.post(`${API_URL}/cartproductdetails`,{token:token})
+                    const cartproductdetails = await axios.post(`${API_URL}/cartproductdetails`, { token: token })
                     setcartproducts(cartproductdetails.data)
                 }
             })
@@ -115,7 +121,7 @@ function Home() {
         axios.post(`${API_URL}/quantitydec`, { token: token, product: props }).
             then(async function (retdata) {
                 if (retdata) {
-                    const cartproductdetails = await axios.post(`${API_URL}/cartproductdetails`,{token:token})
+                    const cartproductdetails = await axios.post(`${API_URL}/cartproductdetails`, { token: token })
                     setcartproducts(cartproductdetails.data)
                 }
             })
@@ -156,13 +162,11 @@ function Home() {
         )
     }
 
-    function handlehome()
-    {
+    function handlehome() {
         navigate("/home")
     }
 
-    function handleorder()
-    {
+    function handleorder() {
         navigate("/order")
     }
 
@@ -199,20 +203,43 @@ function Home() {
         navigate("/contact")
     }
 
-    function handlepay()
-    {
-        if(subtotal === 0)
-        {
+    function handlepay() {
+        if (subtotal === 0) {
             alert("No items where added to cart")
         }
-        else{
-            navigate("/delivery",{state:{total:subtotal,cartproducts:cartproducts}})
+        else {
+            navigate("/delivery", { state: { total: subtotal, cartproducts: cartproducts } })
         }
     }
 
-    function handleaddproducts()
-    {
+    function handleaddproducts() {
         navigate("/addproducts")
+    }
+
+    async function handlecheckbox(event, props) {
+        console.log(props)
+        if (event.target.checked) {
+            await axios.post(`${API_URL}/checked`, { id: props._id }).
+                then(function (retdata) {
+                    if (retdata.data) {
+                        alert("Product is displaying")
+                    }
+                })
+            const productdetails = await axios.get(`${API_URL}/adminproductdetails`)
+            setproducts(productdetails.data)
+            setfilterproducts(productdetails.data)
+        }
+        else {
+            await axios.post(`${API_URL}/unchecked`, { id: props._id }).
+                then(function (retdata) {
+                    if (retdata.data) {
+                        alert("Product is not displaying")
+                    }
+                })
+            const productdetails = await axios.get(`${API_URL}/adminproductdetails`)
+            setproducts(productdetails.data)
+            setfilterproducts(productdetails.data)
+        }
     }
     return (
         <>
@@ -258,7 +285,7 @@ function Home() {
                     <p className="cursor-pointer" onClick={handlescrolldown}>Menu</p>
                     <p className="cursor-pointer" onClick={handlecontact}>Contact</p>
                     <p className="cursor-pointer" onClick={handleorder}>Orders</p>
-                    {/* <p className="cursor-pointer" onClick={handleaddproducts}>Add products</p> */}
+                    {isAdmin ? <p className="cursor-pointer" onClick={handleaddproducts}>Add products</p> : ""}
                 </div>
                 <div className="flex gap-10 items-center max-sm:gap-5">
                     <div>
@@ -286,7 +313,7 @@ function Home() {
                 <p className="cursor-pointer" onClick={handlescrolldown}>Menu</p>
                 <p className="cursor-pointer" onClick={handlecontact}>Contact</p>
                 <p className="cursor-pointer" onClick={handleorder}>Orders</p>
-                {/* <p className="cursor-pointer" onClick={handleaddproducts}>Add products</p> */}
+                {isAdmin ? <p className="cursor-pointer" onClick={handleaddproducts}>Add products</p> : ""}
             </div>
 
             {/* Hero Section */}
@@ -359,7 +386,7 @@ function Home() {
                                     <p className="font-bold text-2xl">No Result Found</p>
                                 </div> :
                                 filterproducts.map(function (item, index) {
-                                    return <Productcard key={index} product={item} addtocart={handleaddtocart}></Productcard>
+                                    return <Productcard key={index} product={item} isAdmin={isAdmin} addtocart={handleaddtocart} handlecheckbox={handlecheckbox}></Productcard>
                                 })
                         }
                     </div>

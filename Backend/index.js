@@ -37,12 +37,20 @@ const Productdetails = mongoose.model("Product",
         category: String,
         rating: String,
         imgurl: String,
-        searchtag: [String]
+        searchtag: [String],
+        availability: { type: Boolean, default: true }
     }, "productcard"
 )
 
 // Fetching Product details from Database
 app.get("/productdetails", async function (req, res) {
+    await Productdetails.find({ availability: true }).then(function (data) {
+        res.json(data)
+    })
+})
+
+// Fetching Product details from Database to Admin
+app.get("/adminproductdetails", async function (req, res) {
     await Productdetails.find().then(function (data) {
         res.json(data)
     })
@@ -267,6 +275,7 @@ app.post("/verify", function (req, res) {
     }
 })
 
+// Fetching Order details From Database
 app.post("/orderdetails", async function (req, res) {
     try {
         const uid = req.body.uid
@@ -278,7 +287,67 @@ app.post("/orderdetails", async function (req, res) {
     catch (err) {
         res.json(false)
     }
+})
 
+// Fetching Order details From Database For Admin
+app.post("/adminorderdetails", async function (req, res) {
+    try {
+        const orderdetails = await Orderdetails.find()
+        res.json(orderdetails)
+    }
+    catch (err) {
+        res.json(false)
+    }
+})
+
+// Adding Products to Menu
+app.post("/addproduct", checkAuth, async function (req, res) {
+    try {
+        await Productdetails.create(
+            {
+                name: req.body.name,
+                amount: req.body.amount,
+                category: req.body.category,
+                rating: req.body.rating,
+                imgurl: req.body.imgurl,
+                searchtag: [req.body.name, req.body.amount, req.body.category, "pizza"],
+            }
+        )
+        res.json(true)
+    }
+    catch {
+        res.json(false)
+    }
+
+})
+
+app.post("/checked", async function (req, res) {
+    const id = req.body.id
+    try {
+        await Productdetails.updateOne(
+            { _id: id },
+            { availability: true }
+        )
+        res.json(true)
+    }
+    catch {
+        res.json(false)
+    }
+
+})
+
+app.post("/unchecked", async function (req, res) {
+    const id = req.body.id
+    try {
+        await Productdetails.updateOne(
+            { _id: id },
+            { availability: false }
+        )
+        res.json(true)
+    }
+    catch {
+        res.json(false)
+    }
 })
 
 const PORT = process.env.PORT || 3000;

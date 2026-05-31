@@ -8,16 +8,20 @@ import { signOut } from "firebase/auth"
 
 function Order() {
     const API_URL = import.meta.env.VITE_API_URL
+        const ADMIN = import.meta.env.VITE_ADMIN_UID
     const navigate = useNavigate()
 
     const [uid, setuid] = useState("")
-
+const [isAdmin, setisAdmin] = useState(false)
     useEffect(function () {
         onAuthStateChanged(auth, function (user) {
             if (user) {
                 setusername(user.displayName)
                 setuseremail(user.email)
                 setuid(user.uid)
+            }
+            if (user.uid === ADMIN) {
+                setisAdmin(true)
             }
         })
     }, [])
@@ -26,7 +30,7 @@ function Order() {
     useEffect(function () {
         if (!uid) return
         async function handleorderdetails() {
-            const orderdetails = await axios.post(`${API_URL}/orderdetails`, { uid: uid })
+            const orderdetails = isAdmin?await axios.post(`${API_URL}/adminorderdetails`):await axios.post(`${API_URL}/orderdetails`, { uid: uid })
             setordetails(orderdetails.data)
         }
         handleorderdetails()
