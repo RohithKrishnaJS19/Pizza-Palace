@@ -87,7 +87,7 @@ function Contact() {
                 <p className="cursor-pointer" onClick={handleorder}>Orders</p>
             </div>
             <div className="bg-white w-full h-[100%] flex justify-center">
-                <div className="bg-red-500  mt-30 mb-15 rounded-2xl flex flex-col justify-center items-center gap-3 p-10 max-sm:mt-15 max-sm:fixed">
+                <div className="bg-red-500  mt-30 mb-15 rounded-2xl flex flex-col justify-center items-center gap-3 p-10 max-sm:mt-15 max-sm:mb-10">
                     <h1 className="font-bold text-3xl">Send Us a Message</h1>
                     <div>
                         <p className="font-bold">Full Name</p>

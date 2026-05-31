@@ -200,8 +200,8 @@ function Deliverydetails() {
                 <p className="cursor-pointer" onClick={handlecontact}>Contact</p>
                 <p className="cursor-pointer" onClick={handleorder}>Orders</p>
             </div>
-            <div className="bg-red-100 flex justify-center items-center h-screen p-20 max-sm:p-0 max-sm:mt-15 sm:max-lg:p-10">
-                <div className="bg-[#F5F5F5] w-[60%] p-10 rounded-xl mt-10 max-sm:w-[90%] max-sm:p-5 max-sm:mb-15 sm:max-lg:w-[95%]">
+            <div className="bg-red-100 flex justify-center items-center h-screen p-20 max-sm:p-0 max-sm:mt-15 max-sm:h-fit sm:max-lg:p-10">
+                <div className="bg-[#F5F5F5] w-[60%] p-10 rounded-xl mt-10 max-sm:w-[90%] max-sm:p-5 max-sm:mt-10 max-sm:mb-15 sm:max-lg:w-[95%]">
                     <div className="flex items-center gap-5">
                         <i className="fa-solid fa-location-dot text-2xl" style={{ color: "rgb(255, 0, 0)" }}></i>
                         <div>
