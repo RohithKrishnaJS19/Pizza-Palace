@@ -1,0 +1,23 @@
+function Productcard(props) {
+    return (
+        <div className="basis-[23%] bg-[#F5F5F5] rounded-lg p-3 max-sm:p-2 max-sm:h-[300px] max-sm:basis-[48%] sm:max-lg:basis-[31%]">
+            <div>
+                <img className="h-50 object-cover rounded-lg max-sm:h-30 sm:max-lg:h-40" src={props.product.imgurl}></img>
+            </div>
+            <div>
+                <p className="font-bold text-xl max-sm:text-[16px]">{props.product.name}</p>
+                <p className="font-bold">₹ {props.product.amount}</p>
+                <p>{props.product.category}</p>
+                <p>{props.product.rating}</p>
+            </div>
+            <div className="flex justify-end mt-3 max-sm:justify-center">
+                <button onClick={function()
+                    {
+                        props.addtocart(props.product)
+                    }
+                } className="bg-red-500 py-1 px-4 font-bold text-white rounded mr-3">Add to Cart</button>
+            </div>
+        </div>
+    )
+}
+export default Productcard;
