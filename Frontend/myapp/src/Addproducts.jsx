@@ -110,8 +110,9 @@ function Addproducts() {
 
                 imgurl = CloudinaryRes.data.secure_url
             }
-            catch {
+            catch(err) {
                 alert("Image upload Failed")
+                console.log(err)
                 return
             }
             await axios.post(`${API_URL}/addproduct`, { token: token, name: name, amount: amount, category: category, rating: rating, imgurl: imgurl }).
