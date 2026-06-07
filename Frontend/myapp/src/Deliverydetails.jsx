@@ -4,11 +4,14 @@ import auth from "./firebaseconfig"
 import { onAuthStateChanged } from "firebase/auth"
 import { useLocation } from "react-router-dom"
 import axios from "axios"
+import { signOut } from "firebase/auth"
 
 function Deliverydetails() {
     const API_URL = import.meta.env.VITE_API_URL
     const navigate = useNavigate()
     const location = useLocation()
+    const [isAdmin, setisAdmin] = useState(false)
+    const ADMIN = import.meta.env.VITE_ADMIN_UID
 
     const [total, settotal] = useState("")
     const [cartproducts, setcartproducts] = useState([])
@@ -26,6 +29,9 @@ function Deliverydetails() {
 
     useEffect(function () {
         onAuthStateChanged(auth, function (user) {
+            if (user.uid === ADMIN) {
+                setisAdmin(true)
+            }
             setusername(user.displayName)
             setuseremail(user.email)
         })
@@ -165,6 +171,20 @@ function Deliverydetails() {
     {
         navigate("/order")
     }
+
+    function handlehome()
+    {
+        navigate("/home")
+    }
+    function handlemessage()
+    {
+        navigate("/message")
+    }
+
+    function handleaddproducts()
+    {
+        navigate("/addproducts")
+    }
     return (
         <>
             {/* Navbar */}
@@ -176,9 +196,9 @@ function Deliverydetails() {
                 </div>
                 <div className="flex gap-10 max-sm:hidden sm:max-lg:gap-5">
                     <p className="cursor-pointer" onClick={handlenavmenu}>Home</p>
-                    <p className="cursor-pointer" onClick={handlenavmenu}>Menu</p>
-                    <p className="cursor-pointer" onClick={handlecontact}>Contact</p>
+                   {isAdmin ?<p className="cursor-pointer" onClick={handlemessage}>Message</p>: <p className="cursor-pointer" onClick={handlecontact}>Contact</p>}
                     <p className="cursor-pointer" onClick={handleorder}>Orders</p>
+                    {isAdmin ? <p className="cursor-pointer" onClick={handleaddproducts}>Add products</p> : ""}
                 </div>
                 <div className="flex gap-10 items-center max-sm:gap-5">
                     <div className="relative">
@@ -196,9 +216,9 @@ function Deliverydetails() {
             <div className={` bg-white font-bold text-xl rounded-br-2xl fixed z-20 flex flex-col h-60 w-60 justify-center items-center gap-5 duration-500 ${showmenu ? "left-0" : "-left-[80%]"}`}>
                 <i onClick={handleclosemenu} className="cursor-pointer fa-solid fa-xmark font-bold text-2xl absolute top-3 left-3" style={{ color: "red" }}></i>
                 <p className="cursor-pointer" onClick={handlenavmenu}>Home</p>
-                <p className="cursor-pointer" onClick={handlenavmenu}>Menu</p>
-                <p className="cursor-pointer" onClick={handlecontact}>Contact</p>
+                {isAdmin ?<p className="cursor-pointer" onClick={handlemessage}>Message</p>: <p className="cursor-pointer" onClick={handlecontact}>Contact</p>}
                 <p className="cursor-pointer" onClick={handleorder}>Orders</p>
+                {isAdmin ? <p className="cursor-pointer" onClick={handleaddproducts}>Add products</p> : ""}
             </div>
             <div className="bg-red-100 flex justify-center items-center h-screen p-20 max-sm:p-0 max-sm:mt-15 max-sm:h-fit sm:max-lg:p-10">
                 <div className="bg-[#F5F5F5] w-[60%] p-10 rounded-xl mt-10 max-sm:w-[90%] max-sm:p-5 max-sm:mt-10 max-sm:mb-15 sm:max-lg:w-[95%]">

@@ -235,6 +235,7 @@ app.post("/createorder", async function (req, res) {
 
     const order = await razorpay.orders.create(option)
     res.json(order)
+    console.log(order)
 })
 
 app.post("/verify", function (req, res) {
@@ -344,6 +345,107 @@ app.post("/unchecked", async function (req, res) {
             { availability: false }
         )
         res.json(true)
+    }
+    catch {
+        res.json(false)
+    }
+})
+
+// Message Model
+const Message = mongoose.model("msg",
+    {
+        uid: String,
+        name: String,
+        email: String,
+        message: String
+    }, "messages"
+)
+
+// creating Message
+app.post("/message", function (req, res) {
+    Message.create({
+        uid: req.body.uid,
+        name: req.body.name,
+        email: req.body.email,
+        message: req.body.message
+    }).then(function () {
+        res.json(true)
+    }).catch(function () {
+        res.json(false)
+    })
+})
+
+// Fetching Messages
+app.get("/getmessage", function (req, res) {
+    Message.find().then(function (data) {
+        res.json(data)
+    })
+})
+
+// Deleting Messages
+app.post("/deletemsg", async function (req, res) {
+    const id = req.body.id
+    try {
+        const result = await Message.deleteOne({ _id: id })
+        if (result.deletedCount > 0) {
+            res.json(true)
+        }
+        else {
+            res.json(false)
+        }
+    }
+    catch {
+        res.json(false)
+    }
+})
+
+// Fliter Veg
+app.get("/veg", async function (req, res) {
+    await Productdetails.find({ category: "Veg" }).then(function (data) {
+        res.json(data)
+    })
+})
+
+// Fliter Non-veg
+app.get("/nonveg", async function (req, res) {
+    await Productdetails.find({ category: "Non-veg" }).then(function (data) {
+        res.json(data)
+    })
+})
+
+app.post("/updateproduct", async function (req, res) {
+    try {
+        await Productdetails.findByIdAndUpdate(req.body.editid,
+            {
+                name: req.body.editname,
+                amount: req.body.editprice,
+                category: req.body.editcategory,
+                rating: req.body.editrating,
+                imgurl: req.body.editimgurl,
+                searchtag: [req.body.editname, req.body.editprice, req.body.editcategory, "pizza"],
+            }
+        )
+        res.json(true)
+    }
+    catch {
+        res.json(false)
+    }
+})
+
+app.post("/deleteproduct", async function (req, res) {
+    try {
+        const productid = req.body.productid
+        if (!productid) {
+            res.json(false)
+            return
+        }
+        const result = await Productdetails.deleteOne({ _id: productid })
+        if (result.deletedCount == 1) {
+            res.json(true)
+        }
+        else {
+            res.json(false)
+        }
     }
     catch {
         res.json(false)

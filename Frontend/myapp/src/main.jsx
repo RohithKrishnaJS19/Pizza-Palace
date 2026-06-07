@@ -6,6 +6,7 @@ import Contact from "./Contact";
 import Order from "./orders";
 import Addproducts from "./Addproducts";
 import Deliverydetails from "./Deliverydetails";
+import Message from "./message";
 import "./index.css";
 import { Route, Routes, BrowserRouter } from "react-router-dom";
 
@@ -21,6 +22,7 @@ root.render(
       <Route path="/delivery" element={<Deliverydetails/>}></Route>
       <Route path="/order" element={<Order/>}></Route>
       <Route path="/addproducts" element={<Addproducts/>}></Route>
+      <Route path="/message" element={<Message/>}></Route>
     </Routes>
   </BrowserRouter>
 )

@@ -5,16 +5,21 @@ import { onAuthStateChanged } from "firebase/auth"
 import Ordercards from "./ordercards"
 import axios from "axios"
 import { signOut } from "firebase/auth"
+import Skeletonordercard from "./Skeletonordercard"
 
 function Order() {
     const API_URL = import.meta.env.VITE_API_URL
-        const ADMIN = import.meta.env.VITE_ADMIN_UID
+    const ADMIN = import.meta.env.VITE_ADMIN_UID
     const navigate = useNavigate()
-
+    const [loading, setloading] = useState(false)
     const [uid, setuid] = useState("")
-const [isAdmin, setisAdmin] = useState(false)
+    const [isAdmin, setisAdmin] = useState(false)
     useEffect(function () {
         onAuthStateChanged(auth, function (user) {
+            if(!user)
+            {
+                navigate("/")
+            }
             if (user) {
                 setusername(user.displayName)
                 setuseremail(user.email)
@@ -30,8 +35,17 @@ const [isAdmin, setisAdmin] = useState(false)
     useEffect(function () {
         if (!uid) return
         async function handleorderdetails() {
-            const orderdetails = isAdmin?await axios.post(`${API_URL}/adminorderdetails`):await axios.post(`${API_URL}/orderdetails`, { uid: uid })
-            setordetails(orderdetails.data)
+            try {
+                setloading(true)
+                const orderdetails = isAdmin ? await axios.post(`${API_URL}/adminorderdetails`) : await axios.post(`${API_URL}/orderdetails`, { uid: uid })
+                setordetails(orderdetails.data)
+            }
+            catch {
+                alert("Something went Wrong")
+            }
+            finally {
+                setloading(false)
+            }
         }
         handleorderdetails()
     }, [uid])
@@ -70,7 +84,14 @@ const [isAdmin, setisAdmin] = useState(false)
         setslideprofile(!slideprofile)
     }
 
+    function handlemessage() {
+        navigate("/message")
+    }
 
+    function handleaddproducts() {
+        navigate("/addproducts")
+    }
+    const ord = [1, 2]
     return (
         <>
             {/* Navbar */}
@@ -82,11 +103,17 @@ const [isAdmin, setisAdmin] = useState(false)
                 </div>
                 <div className="flex gap-10 max-sm:hidden sm:max-lg:gap-5">
                     <p className="cursor-pointer" onClick={handlenavmenu}>Home</p>
-                    <p className="cursor-pointer" onClick={handlenavmenu}>Menu</p>
-                    <p className="cursor-pointer" onClick={handlecontact}>Contact</p>
-                    <p className="cursor-pointer" onClick={handleorder}>Orders</p>
+                    {isAdmin ? <p className="cursor-pointer" onClick={handlemessage}>Message</p> : <p className="cursor-pointer" onClick={handlecontact}>Contact</p>}
+                    <p className={`cursor-pointer pb-1 ${location.pathname === "/order" ? "border-b-2 border-red-500 text-red-500" : ""}`} onClick={handleorder}>Orders</p>
+                    {isAdmin ? <p className="cursor-pointer" onClick={handleaddproducts}>Add products</p> : ""}
                 </div>
                 <div className="flex gap-10 items-center max-sm:gap-5">
+                    <div className="max-sm:hidden invisible">
+                        <i className="fa-solid fa-magnifying-glass text-2xl"></i>
+                    </div>
+                    <div className="max-sm:hidden invisible">
+                        <i className="fa-solid fa-cart-shopping text-2xl"></i>
+                    </div>
                     <div className="relative">
                         <i onClick={handleprofile} className="fa-regular fa-circle-user text-2xl cursor-pointer mr-8 max-sm:mr-2 max-sm:text-2xl sm:max-lg:text-3xl" style={{ color: "rgb(0, 0, 0)" }}></i>
                         <div className={` border border-black bg-white p-5 absolute top-10 rounded-2xl flex flex-col gap-3 duration-600 ${slideprofile ? "right-3" : "-right-96"}`}>
@@ -102,17 +129,23 @@ const [isAdmin, setisAdmin] = useState(false)
             <div className={` bg-white font-bold text-xl rounded-br-2xl fixed z-20 flex flex-col h-60 w-60 justify-center items-center gap-5 duration-500 ${showmenu ? "left-0" : "-left-[80%]"}`}>
                 <i onClick={handleclosemenu} className="cursor-pointer fa-solid fa-xmark font-bold text-2xl absolute top-3 left-3" style={{ color: "red" }}></i>
                 <p className="cursor-pointer" onClick={handlenavmenu}>Home</p>
-                <p className="cursor-pointer" onClick={handlenavmenu}>Menu</p>
-                <p className="cursor-pointer" onClick={handlecontact}>Contact</p>
+                {isAdmin ? <p className="cursor-pointer" onClick={handlemessage}>Message</p> : <p className="cursor-pointer" onClick={handlecontact}>Contact</p>}
                 <p className="cursor-pointer" onClick={handleorder}>Orders</p>
+                {isAdmin ? <p className="cursor-pointer" onClick={handleaddproducts}>Add products</p> : ""}
             </div>
             <div className="mt-18 items-center flex flex-col mb-10">
                 {
-                    ordetails.length === 0 ?
-                        <p className="font-bold text-3xl mt-10">No Orders Found</p> :
-                        ordetails.map(function (item, index) {
-                            return <Ordercards orderdetails={item} key={index}></Ordercards>
-                        })
+                    loading ? ord.map(function (item, index) {
+                        return <Skeletonordercard key={index}></Skeletonordercard>
+                    }) :
+                        ordetails.length === 0 ?
+                            <div className="flex flex-col justify-center items-center w-full min-h-[500px] gap-3">
+                                <img className="w-60" src={"https://res.cloudinary.com/dbrfobvcz/image/upload/q_auto/f_auto/v1780756921/box_xeja46.png"}></img>
+                                <p className="font-bold text-2xl">No Orders Yet</p>
+                            </div> :
+                            ordetails.map(function (item, index) {
+                                return <Ordercards orderdetails={item} key={index}></Ordercards>
+                            })
                 }
             </div>
         </>
