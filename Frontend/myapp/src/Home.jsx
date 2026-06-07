@@ -22,7 +22,7 @@ function Home() {
                 navigate("/")
                 return;
             }
-            if (user.uid === ADMIN) {
+            if (user.uid == ADMIN) {
                 setisAdmin(true)
             }
             setusername(user.displayName)
