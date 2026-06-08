@@ -232,10 +232,8 @@ app.post("/createorder", async function (req, res) {
         currency: "INR",
         receipt: `pizza_${Date.now()}`
     }
-
     const order = await razorpay.orders.create(option)
     res.json(order)
-    console.log(order)
 })
 
 app.post("/verify", function (req, res) {

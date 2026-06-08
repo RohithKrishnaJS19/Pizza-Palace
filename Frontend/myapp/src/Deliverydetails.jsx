@@ -11,8 +11,6 @@ function Deliverydetails() {
     const navigate = useNavigate()
     const location = useLocation()
     const [isAdmin, setisAdmin] = useState(false)
-    const ADMIN = import.meta.env.VITE_ADMIN_UID
-
     const [total, settotal] = useState("")
     const [cartproducts, setcartproducts] = useState([])
     useEffect(function () {
@@ -28,13 +26,23 @@ function Deliverydetails() {
 
 
     useEffect(function () {
-        onAuthStateChanged(auth, function (user) {
-            if (user.uid === ADMIN) {
-                setisAdmin(true)
+        const unsubscribe = onAuthStateChanged(auth,async function (user) {
+            if (!user) {
+                navigate("/home")
+                return
+            }
+            const tokenResult = await user.getIdTokenResult()
+            if (tokenResult.claims.admin) {
+                setisAdmin(true);
+            } else {
+                setisAdmin(false);
             }
             setusername(user.displayName)
             setuseremail(user.email)
         })
+        return function () {
+            unsubscribe()
+        }
     }, [])
 
     // Show menu
@@ -119,7 +127,7 @@ function Deliverydetails() {
                 price: item.amount
             }
         })
-        
+
         const uid = cartproducts[0].uid
 
         if (name.trim().length > 2 && phone.trim().length == 10 && email.trim().length > 5 && address.trim().length > 9 && city.trim().length > 3 && pincode.trim().length == 6) {
@@ -133,7 +141,7 @@ function Deliverydetails() {
                 description: "Payment for pizza order",
                 order_id: order.data.id,
                 handler: async function (resp) {
-                    const verify = await axios.post(`${API_URL}/verify`, { response: resp, name: name, phone: phone, email: email, address: address, city: city, pincode: pincode, total: total, itemdetails: filteredcartproducts,uid:uid })
+                    const verify = await axios.post(`${API_URL}/verify`, { response: resp, name: name, phone: phone, email: email, address: address, city: city, pincode: pincode, total: total, itemdetails: filteredcartproducts, uid: uid })
                     alert(verify.data.message)
                     navigate("/order")
                 },
@@ -167,22 +175,18 @@ function Deliverydetails() {
         }
     }
 
-    function handleorder()
-    {
+    function handleorder() {
         navigate("/order")
     }
 
-    function handlehome()
-    {
+    function handlehome() {
         navigate("/home")
     }
-    function handlemessage()
-    {
+    function handlemessage() {
         navigate("/message")
     }
 
-    function handleaddproducts()
-    {
+    function handleaddproducts() {
         navigate("/addproducts")
     }
     return (
@@ -196,7 +200,7 @@ function Deliverydetails() {
                 </div>
                 <div className="flex gap-10 max-sm:hidden sm:max-lg:gap-5">
                     <p className="cursor-pointer" onClick={handlenavmenu}>Home</p>
-                   {isAdmin ?<p className="cursor-pointer" onClick={handlemessage}>Message</p>: <p className="cursor-pointer" onClick={handlecontact}>Contact</p>}
+                    {isAdmin ? <p className="cursor-pointer" onClick={handlemessage}>Message</p> : <p className="cursor-pointer" onClick={handlecontact}>Contact</p>}
                     <p className="cursor-pointer" onClick={handleorder}>Orders</p>
                     {isAdmin ? <p className="cursor-pointer" onClick={handleaddproducts}>Add products</p> : ""}
                 </div>
@@ -216,7 +220,7 @@ function Deliverydetails() {
             <div className={` bg-white font-bold text-xl rounded-br-2xl fixed z-20 flex flex-col h-60 w-60 justify-center items-center gap-5 duration-500 ${showmenu ? "left-0" : "-left-[80%]"}`}>
                 <i onClick={handleclosemenu} className="cursor-pointer fa-solid fa-xmark font-bold text-2xl absolute top-3 left-3" style={{ color: "red" }}></i>
                 <p className="cursor-pointer" onClick={handlenavmenu}>Home</p>
-                {isAdmin ?<p className="cursor-pointer" onClick={handlemessage}>Message</p>: <p className="cursor-pointer" onClick={handlecontact}>Contact</p>}
+                {isAdmin ? <p className="cursor-pointer" onClick={handlemessage}>Message</p> : <p className="cursor-pointer" onClick={handlecontact}>Contact</p>}
                 <p className="cursor-pointer" onClick={handleorder}>Orders</p>
                 {isAdmin ? <p className="cursor-pointer" onClick={handleaddproducts}>Add products</p> : ""}
             </div>

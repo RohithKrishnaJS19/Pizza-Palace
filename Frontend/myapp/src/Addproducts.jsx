@@ -13,11 +13,12 @@ function Addproducts() {
     const location = useLocation()
 
     useEffect(function () {
-        onAuthStateChanged(auth, function (user) {
+        onAuthStateChanged(auth,async function (user) {
             if (user) {
                 setusername(user.displayName)
                 setuseremail(user.email)
-                settoken(user.accessToken)
+                const idToken = await user.getIdToken()
+                settoken(idToken)
             }
             else {
                 navigate("/")

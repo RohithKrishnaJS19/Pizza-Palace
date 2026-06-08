@@ -8,9 +8,10 @@ function Login() {
     const navigate = useNavigate()
     const [token, settoken] = useState("")
     useEffect(function () {
-        onAuthStateChanged(auth, function (user) {
+        onAuthStateChanged(auth,async function (user) {
             if (user) {
-                settoken(user.accessToken)
+                const idToken = await user.getIdToken()
+                settoken(idToken)
                 navigate("/home")
             }
         })

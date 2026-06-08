@@ -11,19 +11,27 @@ import Skeletonmessagecard from "./Skeletonmessagecard"
 function Message() {
     const navigate = useNavigate()
     const location = useLocation()
-    const ADMIN = import.meta.env.VITE_ADMIN_UID
     const API_URL = import.meta.env.VITE_API_URL
     const [delmsg, setdelmsg] = useState(false)
     const [isAdmin, setisAdmin] = useState(false)
     const [loading, setloading] = useState(false)
     useEffect(function () {
-        const unsubscribe = onAuthStateChanged(auth, function (user) {
-            if (!user || user.uid != ADMIN) {
+        const unsubscribe = onAuthStateChanged(auth,async function (user) {
+            if (!user) {
                 navigate("/home")
                 return
             }
-            if (user.uid === ADMIN) {
-                setisAdmin(true)
+            if (user) {
+                const tokenResult = await user.getIdTokenResult()
+                if (!tokenResult.claims.admin) {
+                    navigate("/home")
+                    return;
+                }
+                if (tokenResult.claims.admin) {
+                    setisAdmin(true)
+                } else {
+                    setisAdmin(false)
+                }
                 setusername(user.displayName)
                 setuseremail(user.email)
             }

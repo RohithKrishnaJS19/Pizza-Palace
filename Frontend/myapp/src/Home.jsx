@@ -10,26 +10,31 @@ import Skeletonproductcard from "./Skeletonproductcard";
 
 function Home() {
     const API_URL = import.meta.env.VITE_API_URL
-    const ADMIN = import.meta.env.VITE_ADMIN_UID
     const navigate = useNavigate()
     const location = useLocation()
     const [token, settoken] = useState("")
     const [isAdmin, setisAdmin] = useState(false)
     const [loading, setloading] = useState(false)
     useEffect(function () {
-        onAuthStateChanged(auth, function (user) {
+        const unsubscribe = onAuthStateChanged(auth,async function (user) {
             if (!user) {
                 navigate("/")
                 return;
             }
-            if (user.uid == ADMIN) {
-                setisAdmin(true)
+            const tokenResult = await user.getIdTokenResult();
+            if (tokenResult.claims.admin) {
+                setisAdmin(true);
+            } else {
+                setisAdmin(false);
             }
             setusername(user.displayName)
             setuseremail(user.email)
-            settoken(user.accessToken)
-
+            const idToken = await user.getIdToken()
+            settoken(idToken)
         })
+        return function () {
+            unsubscribe()
+        }
     }, [])
 
     useEffect(function () {

@@ -9,26 +9,32 @@ import Skeletonordercard from "./Skeletonordercard"
 
 function Order() {
     const API_URL = import.meta.env.VITE_API_URL
-    const ADMIN = import.meta.env.VITE_ADMIN_UID
     const navigate = useNavigate()
     const [loading, setloading] = useState(false)
     const [uid, setuid] = useState("")
     const [isAdmin, setisAdmin] = useState(false)
     useEffect(function () {
-        onAuthStateChanged(auth, function (user) {
+        const unsubscribe = onAuthStateChanged(auth,async function (user) {
             if(!user)
             {
                 navigate("/")
+                return
             }
             if (user) {
+                const tokenResult = await user.getIdTokenResult();
+                if (tokenResult.claims.admin) {
+                    setisAdmin(true)
+                } else {
+                    setisAdmin(false)
+                }
                 setusername(user.displayName)
                 setuseremail(user.email)
                 setuid(user.uid)
             }
-            if (user.uid === ADMIN) {
-                setisAdmin(true)
-            }
         })
+        return function () {
+            unsubscribe()
+        }
     }, [])
 
     const [ordetails, setordetails] = useState([])
