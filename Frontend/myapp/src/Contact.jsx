@@ -88,11 +88,11 @@ function Contact() {
             {/* Navbar */}
             <div className=" bg-[#F5F5F5] flex justify-between h-18 items-center fixed w-full top-0 z-20">
                 <div className="flex items-center gap-3">
-                    <i onClick={handlemenu} className="fa-solid fa-bars ml-2 text-xl sm:!hidden" style={{ color: "rgb(0, 0, 0)" }}></i>
-                    <img src={"https://res.cloudinary.com/dbrfobvcz/image/upload/q_auto/f_auto/v1779545245/pizza_logo_doongp.png"} className="w-10 ml-8 max-sm:hidden"></img>
+                    <i onClick={handlemenu} className="fa-solid fa-bars ml-2 text-xl lg:!hidden" style={{ color: "rgb(0, 0, 0)" }}></i>
+                    <img src={"https://res.cloudinary.com/dbrfobvcz/image/upload/q_auto/f_auto/v1779545245/pizza_logo_doongp.png"} className="w-10 ml-8 max-sm:hidden sm:max-lg:hidden"></img>
                     <h1 className="text-2xl font-bold text-red-500 max-sm:text-xl">PIZZA PALACE</h1>
                 </div>
-                <div className="flex gap-10 max-sm:hidden sm:max-lg:gap-5">
+                <div className="flex gap-10 max-sm:hidden sm:max-lg:hidden">
                     <p className="cursor-pointer" onClick={handlenavmenu}>Home</p>
                     <p  className={`cursor-pointer pb-1 ${location.pathname === "/contact" ? "border-b-2 border-red-500 text-red-500" : ""}`} onClick={handlecontact}>Contact</p>
                     <p className="cursor-pointer" onClick={handleorder}>Orders</p>

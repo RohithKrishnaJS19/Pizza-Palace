@@ -15,8 +15,9 @@ function Message() {
     const [delmsg, setdelmsg] = useState(false)
     const [isAdmin, setisAdmin] = useState(false)
     const [loading, setloading] = useState(false)
+    const [owner,setowner] = useState(false)
     useEffect(function () {
-        const unsubscribe = onAuthStateChanged(auth,async function (user) {
+        const unsubscribe = onAuthStateChanged(auth, async function (user) {
             if (!user) {
                 navigate("/home")
                 return
@@ -26,6 +27,11 @@ function Message() {
                 if (!tokenResult.claims.admin) {
                     navigate("/home")
                     return;
+                }
+                if (tokenResult.claims.owner) {
+                    setowner(true)
+                } else {
+                    setowner(false)
                 }
                 if (tokenResult.claims.admin) {
                     setisAdmin(true)
@@ -117,20 +123,26 @@ function Message() {
     }
 
     const msg = [1, 2, 3, 4]
+
+    function handlemanageadmin()
+    {
+        navigate("/manageadmin")
+    }
     return (
         <>
             {/* Navbar */}
             <div className=" bg-[#F5F5F5] flex justify-between h-18 items-center fixed w-full top-0 z-20">
                 <div className="flex items-center gap-3">
-                    <i onClick={handlemenu} className="fa-solid fa-bars ml-2 text-xl sm:!hidden" style={{ color: "rgb(0, 0, 0)" }}></i>
-                    <img src={"https://res.cloudinary.com/dbrfobvcz/image/upload/q_auto/f_auto/v1779545245/pizza_logo_doongp.png"} className="w-10 ml-8 max-sm:hidden"></img>
+                    <i onClick={handlemenu} className="fa-solid fa-bars ml-2 text-xl lg:!hidden" style={{ color: "rgb(0, 0, 0)" }}></i>
+                    <img src={"https://res.cloudinary.com/dbrfobvcz/image/upload/q_auto/f_auto/v1779545245/pizza_logo_doongp.png"} className="w-10 ml-8 max-sm:hidden sm:max-lg:hidden"></img>
                     <h1 className="text-2xl font-bold text-red-500 max-sm:text-xl">PIZZA PALACE</h1>
                 </div>
-                <div className="flex gap-10 max-sm:hidden sm:max-lg:gap-5">
+                <div className="flex gap-10 max-sm:hidden sm:max-lg:hidden">
                     <p className="cursor-pointer" onClick={handlehome}>Home</p>
                     <p className={`cursor-pointer pb-1 ${location.pathname === "/message" ? "border-b-2 border-red-500 text-red-500" : ""}`} onClick={handlemessage}>Message</p>
                     <p className="cursor-pointer" onClick={handleorder}>Orders</p>
                     {isAdmin ? <p className="cursor-pointer" onClick={handleaddproducts}>Add products</p> : ""}
+                    {owner ? <p onClick={handlemanageadmin} className="cursor-pointer">Manage Admin</p> : ""}
                 </div>
                 <div className="flex gap-10 items-center max-sm:gap-5">
                     <div className="max-sm:hidden invisible">
@@ -151,12 +163,13 @@ function Message() {
                     </div>
                 </div>
             </div>
-            <div className={` bg-white font-bold text-xl rounded-br-2xl fixed z-20 flex flex-col h-60 w-60 justify-center items-center gap-5 duration-500 ${showmenu ? "left-0" : "-left-[80%]"}`}>
+            <div className={` bg-white font-bold text-xl rounded-br-2xl fixed z-20 flex flex-col h-80 w-60 justify-center items-center gap-5 duration-500 ${showmenu ? "left-0" : "-left-[80%]"}`}>
                 <i onClick={handleclosemenu} className="cursor-pointer fa-solid fa-xmark font-bold text-2xl absolute top-3 left-3" style={{ color: "red" }}></i>
                 <p className="cursor-pointer" onClick={handlehome}>Home</p>
                 <p className="cursor-pointer" onClick={handlemessage}>Message</p>
                 <p className="cursor-pointer" onClick={handleorder}>Orders</p>
                 <p className="cursor-pointer" onClick={handleaddproducts}>Add products</p>
+                {owner ? <p onClick={handlemanageadmin} className="cursor-pointer">Manage Admin</p> : ""}
             </div>
             <div className="flex justify-center">
                 <div className=" w-[80%] flex flex-wrap mt-25 mb-10 gap-10 max-sm:w-[100%] max-sm:justify-center">

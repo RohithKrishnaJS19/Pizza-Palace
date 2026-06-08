@@ -13,6 +13,7 @@ function Deliverydetails() {
     const [isAdmin, setisAdmin] = useState(false)
     const [total, settotal] = useState("")
     const [cartproducts, setcartproducts] = useState([])
+    const [owner,setowner] = useState(false)
     useEffect(function () {
         if (!location.state) {
             navigate("/home")
@@ -32,6 +33,11 @@ function Deliverydetails() {
                 return
             }
             const tokenResult = await user.getIdTokenResult()
+            if (tokenResult.claims.owner) {
+                setowner(true)
+            } else {
+                setowner(false)
+            }
             if (tokenResult.claims.admin) {
                 setisAdmin(true);
             } else {
@@ -189,20 +195,26 @@ function Deliverydetails() {
     function handleaddproducts() {
         navigate("/addproducts")
     }
+
+    function handlemanageadmin()
+    {
+        navigate("/manageadmin")
+    }
     return (
         <>
             {/* Navbar */}
             <div className=" bg-[#F5F5F5] flex justify-between h-18 items-center fixed w-full top-0 z-20">
                 <div className="flex items-center gap-3">
-                    <i onClick={handlemenu} className="fa-solid fa-bars ml-2 text-xl sm:!hidden" style={{ color: "rgb(0, 0, 0)" }}></i>
-                    <img src={"https://res.cloudinary.com/dbrfobvcz/image/upload/q_auto/f_auto/v1779545245/pizza_logo_doongp.png"} className="w-10 ml-8 max-sm:hidden"></img>
+                    <i onClick={handlemenu} className="fa-solid fa-bars ml-2 text-xl lg:!hidden" style={{ color: "rgb(0, 0, 0)" }}></i>
+                    <img src={"https://res.cloudinary.com/dbrfobvcz/image/upload/q_auto/f_auto/v1779545245/pizza_logo_doongp.png"} className="w-10 ml-8 max-sm:hidden sm:max-lg:hidden"></img>
                     <h1 className="text-2xl font-bold text-red-500 max-sm:text-xl">PIZZA PALACE</h1>
                 </div>
-                <div className="flex gap-10 max-sm:hidden sm:max-lg:gap-5">
+                <div className="flex gap-10 max-sm:hidden sm:max-lg:hidden">
                     <p className="cursor-pointer" onClick={handlenavmenu}>Home</p>
                     {isAdmin ? <p className="cursor-pointer" onClick={handlemessage}>Message</p> : <p className="cursor-pointer" onClick={handlecontact}>Contact</p>}
                     <p className="cursor-pointer" onClick={handleorder}>Orders</p>
                     {isAdmin ? <p className="cursor-pointer" onClick={handleaddproducts}>Add products</p> : ""}
+                    {owner?<p onClick={handlemanageadmin} className="cursor-pointer">Manage Admin</p> : ""}
                 </div>
                 <div className="flex gap-10 items-center max-sm:gap-5">
                     <div className="relative">
@@ -217,12 +229,13 @@ function Deliverydetails() {
                     </div>
                 </div>
             </div>
-            <div className={` bg-white font-bold text-xl rounded-br-2xl fixed z-20 flex flex-col h-60 w-60 justify-center items-center gap-5 duration-500 ${showmenu ? "left-0" : "-left-[80%]"}`}>
+            <div className={` bg-white font-bold text-xl rounded-br-2xl fixed z-20 flex flex-col h-80 w-60 justify-center items-center gap-5 duration-500 ${showmenu ? "left-0" : "-left-[80%]"}`}>
                 <i onClick={handleclosemenu} className="cursor-pointer fa-solid fa-xmark font-bold text-2xl absolute top-3 left-3" style={{ color: "red" }}></i>
                 <p className="cursor-pointer" onClick={handlenavmenu}>Home</p>
                 {isAdmin ? <p className="cursor-pointer" onClick={handlemessage}>Message</p> : <p className="cursor-pointer" onClick={handlecontact}>Contact</p>}
                 <p className="cursor-pointer" onClick={handleorder}>Orders</p>
                 {isAdmin ? <p className="cursor-pointer" onClick={handleaddproducts}>Add products</p> : ""}
+                {owner?<p onClick={handlemanageadmin} className="cursor-pointer">Manage Admin</p> : ""}
             </div>
             <div className="bg-red-100 flex justify-center items-center h-screen p-20 max-sm:p-0 max-sm:mt-15 max-sm:h-fit sm:max-lg:p-10">
                 <div className="bg-[#F5F5F5] w-[60%] p-10 rounded-xl mt-10 max-sm:w-[90%] max-sm:p-5 max-sm:mt-10 max-sm:mb-15 sm:max-lg:w-[95%]">

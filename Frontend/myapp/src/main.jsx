@@ -9,6 +9,7 @@ import Deliverydetails from "./Deliverydetails";
 import Message from "./message";
 import "./index.css";
 import { Route, Routes, BrowserRouter } from "react-router-dom";
+import Manageadmin from "./Manageadmin";
 
 const root = ReactDOM.createRoot(document.getElementById("root"))
 
@@ -23,6 +24,7 @@ root.render(
       <Route path="/order" element={<Order/>}></Route>
       <Route path="/addproducts" element={<Addproducts/>}></Route>
       <Route path="/message" element={<Message/>}></Route>
+      <Route path="/manageadmin" element={<Manageadmin/>}></Route>
     </Routes>
   </BrowserRouter>
 )
