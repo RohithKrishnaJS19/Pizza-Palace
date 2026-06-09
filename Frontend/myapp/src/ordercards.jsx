@@ -70,8 +70,16 @@ function Ordercards(props) {
                         <p className="font-bold max-sm:text-sm sm:max-lg:text-sm">{props.orderdetails.delivery_status}</p>
                     </div>
                 </div>
-
             </div>
+            {
+                props.isAdmin ? <div className="flex justify-end mt-5">
+                    <button onClick={function () {
+                        props.handleupdatestatus(props.orderdetails)
+                    }
+                    } className="font-bold text-white bg-blue-500 px-5 py-2 rounded">Update Delivery Status</button>
+                </div> : ""
+            }
+
         </div>
     )
 }

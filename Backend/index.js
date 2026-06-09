@@ -187,7 +187,7 @@ const Userdetails = mongoose.model("user",
         email: String,
         password: String,
         firebase_uid: String,
-        admin:{type:Boolean,default:false}
+        admin: { type: Boolean, default: false }
     }, "userdetails"
 )
 
@@ -304,7 +304,7 @@ app.post("/orderdetails", async function (req, res) {
 // Fetching Order details From Database For Admin
 app.post("/adminorderdetails", async function (req, res) {
     try {
-        const orderdetails = await Orderdetails.find()
+        const orderdetails = await Orderdetails.find({delivery_status: { $ne: "Delivered" }})
         res.json(orderdetails)
     }
     catch (err) {
@@ -464,39 +464,50 @@ app.post("/deleteproduct", async function (req, res) {
 })
 
 // Add To Admin
-app.post("/addadmin", checkAuth, isOwner,async function (req, res) {
+app.post("/addadmin", checkAuth, isOwner, async function (req, res) {
     try {
         const user = await admin.auth().getUserByEmail(req.body.email)
         await admin.auth().setCustomUserClaims(user.uid, { admin: true })
-        await Userdetails.updateOne({firebase_uid:user.uid},{admin:true})
+        await Userdetails.updateOne({ firebase_uid: user.uid }, { admin: true })
         res.json(true)
     }
-   catch{
-    res.json(false)
-   }
+    catch {
+        res.json(false)
+    }
 })
 
 // Remove From Admin
-app.post("/removeadmin", checkAuth, isOwner,async function (req, res) {
+app.post("/removeadmin", checkAuth, isOwner, async function (req, res) {
     try {
         const user = await admin.auth().getUserByEmail(req.body.email)
         await admin.auth().setCustomUserClaims(user.uid, { admin: false })
-        await Userdetails.updateOne({firebase_uid:user.uid},{admin:false})
+        await Userdetails.updateOne({ firebase_uid: user.uid }, { admin: false })
         res.json(true)
     }
-   catch{
-    res.json(false)
-   }
+    catch {
+        res.json(false)
+    }
 })
 
-app.get("/getadminusers",async function(req,res)
-{
-    try{
-        const admins = await Userdetails.find({admin:true})
+app.get("/getadminusers", async function (req, res) {
+    try {
+        const admins = await Userdetails.find({ admin: true })
         res.json(admins)
     }
-    catch{
+    catch {
         res.json(false)
+    }
+})
+
+app.post("/updatestatus", async function (req, res) {
+    try {
+        const orderid = req.body.orderid
+        const deliverystatus = req.body.deliverystatus
+        await Orderdetails.findByIdAndUpdate(orderid, { delivery_status: deliverystatus })
+        res.json({success:true})
+    }
+    catch{
+        res.json({success:false})
     }
 })
 

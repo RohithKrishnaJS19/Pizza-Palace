@@ -13,7 +13,7 @@ function Order() {
     const [loading, setloading] = useState(false)
     const [uid, setuid] = useState("")
     const [isAdmin, setisAdmin] = useState(false)
-    const [owner,setowner] = useState(false)
+    const [owner, setowner] = useState(false)
     useEffect(function () {
         const unsubscribe = onAuthStateChanged(auth, async function (user) {
             if (!user) {
@@ -102,15 +102,93 @@ function Order() {
     function handleaddproducts() {
         navigate("/addproducts")
     }
-    
-    function handlemanageadmin()
-    {
+
+    function handlemanageadmin() {
         navigate("/manageadmin")
     }
 
     const ord = [1, 2]
+
+    const [deliverypopup, setdeliverypopup] = useState(false)
+
+    const [deliverystatus, setdeliverystatus] = useState("")
+    const [deliveryorderid, setdeliveryorderid] = useState("")
+    function handleupdatestatus(event) {
+        setdeliverypopup(true)
+        setselectedstatus(event.delivery_status)
+        setdeliverystatus(event.delivery_status)
+        setdeliveryorderid(event._id)
+    }
+
+    function handlecancel() {
+        setdeliverypopup(false)
+    }
+
+    const [selectedstatus, setselectedstatus] = useState("")
+    function handlestatuschange(event) {
+        setselectedstatus(event.target.value)
+    }
+
+    async function handleupdate() {
+        const retdata = await axios.post(`${API_URL}/updatestatus`, { orderid: deliveryorderid, deliverystatus: selectedstatus })
+        if (retdata.data.success) {
+            alert("Delivery Status Updated")
+            setdeliverypopup(false)
+            const orderdetails = isAdmin ? await axios.post(`${API_URL}/adminorderdetails`) : await axios.post(`${API_URL}/orderdetails`, { uid: uid })
+            setordetails(orderdetails.data)
+        }
+        else {
+            alert("Delivery status Not Update")
+        }
+    }
     return (
         <>
+            {
+                deliverypopup ? <div className="flex justify-center items-center bg-black/70 h-screen w-[100%] top-0 fixed z-40">
+                    <div className="bg-white w-[30%] rounded-xl p-8 max-sm:w-[100%] max-sm:p-4 sm:max-lg:w-[70%]">
+                        <div className="border-b-2">
+                            <h1 className="font-bold text-2xl p-3">Update Delivery Status</h1>
+                            <div className="flex gap-2 pl-3">
+                                <h1 className="font-bold">Order ID:</h1>
+                                <p>{deliveryorderid}</p>
+                            </div>
+                        </div>
+                        <div className="flex gap-2 p-3 items-center">
+                            <h1>Current Status:</h1>
+                            <button className="font-bold px-4 py-1 bg-orange-100 text-orange-500 rounded-4xl">{deliverystatus}</button>
+                        </div>
+                        <div className="flex flex-col gap-3">
+                            <h1 className="font-bold">Select New Status</h1>
+                            <div className="flex items-center gap-3 border-1 py-3 px-5 rounded bg-orange-100">
+                                <input onChange={handlestatuschange} type="radio" name="deliveryStatus" value="Preparing" checked={selectedstatus === "Preparing"} className="scale-150"></input>
+                                <i className="fa-solid fa-pizza-slice text-2xl text-orange-500"></i>
+                                <h1 className="font-bold">Preparing</h1>
+                            </div>
+                            <div className="flex items-center gap-3 border-1 py-3 px-5 rounded bg-green-100">
+                                <input onChange={handlestatuschange} type="radio" name="deliveryStatus" value="Ready for Pickup" checked={selectedstatus === "Ready for Pickup"} className="scale-150"></input>
+                                <i className="fa-solid fa-bag-shopping text-green-500 text-2xl"></i>
+                                <h1 className="font-bold">Ready for Pickup</h1>
+                            </div>
+                            <div className="flex items-center gap-3 border-1 py-3 px-5 rounded bg-blue-100">
+                                <input onChange={handlestatuschange} type="radio" name="deliveryStatus" value="Out for Delivery" checked={selectedstatus === "Out for Delivery"} className="scale-150"></input>
+                                <i className="fa-solid fa-motorcycle text-blue-500 text-2xl"></i>
+                                <h1 className="font-bold">Out for Delivery</h1>
+                            </div>
+                            <div className="flex items-center gap-3 border-1 py-3 px-5 rounded bg-violet-100">
+                                <input onChange={handlestatuschange} type="radio" name="deliveryStatus" value="Delivered" checked={selectedstatus === "Delivered"} className="scale-150"></input>
+                                <i className="fa-solid fa-circle-check text-violet-500 text-2xl"></i>
+                                <h1 className="font-bold">Delivered</h1>
+                            </div>
+                        </div>
+                        <div className="flex justify-end mt-5 gap-3">
+                            <button onClick={handlecancel} className="bg-white font-bold border-2 px-4 py-2 rounded">Cancel</button>
+                            <button onClick={handleupdate} className="font-bold text-white bg-blue-500 px-5 py-2 rounded">Update Status</button>
+                        </div>
+                    </div>
+                </div> : ""
+            }
+
+
             {/* Navbar */}
             <div className=" bg-[#F5F5F5] flex justify-between h-18 items-center fixed w-full top-0 z-20">
                 <div className="flex items-center gap-3">
@@ -123,7 +201,7 @@ function Order() {
                     {isAdmin ? <p className="cursor-pointer" onClick={handlemessage}>Message</p> : <p className="cursor-pointer" onClick={handlecontact}>Contact</p>}
                     <p className={`cursor-pointer pb-1 ${location.pathname === "/order" ? "border-b-2 border-red-500 text-red-500" : ""}`} onClick={handleorder}>Orders</p>
                     {isAdmin ? <p className="cursor-pointer" onClick={handleaddproducts}>Add products</p> : ""}
-                    {owner?<p onClick={handlemanageadmin} className="cursor-pointer">Manage Admin</p> : ""}
+                    {owner ? <p onClick={handlemanageadmin} className="cursor-pointer">Manage Admin</p> : ""}
                 </div>
                 <div className="flex gap-10 items-center max-sm:gap-5">
                     <div className="max-sm:hidden invisible">
@@ -150,7 +228,7 @@ function Order() {
                 {isAdmin ? <p className="cursor-pointer" onClick={handlemessage}>Message</p> : <p className="cursor-pointer" onClick={handlecontact}>Contact</p>}
                 <p className="cursor-pointer" onClick={handleorder}>Orders</p>
                 {isAdmin ? <p className="cursor-pointer" onClick={handleaddproducts}>Add products</p> : ""}
-                {owner?<p onClick={handlemanageadmin} className="cursor-pointer">Manage Admin</p> : ""}
+                {owner ? <p onClick={handlemanageadmin} className="cursor-pointer">Manage Admin</p> : ""}
             </div>
             <div className="mt-18 items-center flex flex-col mb-10">
                 {
@@ -163,7 +241,7 @@ function Order() {
                                 <p className="font-bold text-2xl">No Orders Yet</p>
                             </div> :
                             ordetails.map(function (item, index) {
-                                return <Ordercards orderdetails={item} key={index}></Ordercards>
+                                return <Ordercards orderdetails={item} key={index} handleupdatestatus={handleupdatestatus} isAdmin={isAdmin}></Ordercards>
                             })
                 }
             </div>
