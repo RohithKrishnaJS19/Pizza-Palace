@@ -563,8 +563,8 @@ function Home() {
                     }
                 </div>
                 <div className="flex bg-red-500 justify-between items-center p-2 bottom-0 fixed w-[50%] max-sm:w-[100%] sm:max-lg:w-[80%]">
-                    <div className="text-2xl text-white ml-4 flex gap-3 max-sm:text-xl">Sub Total:<p className="font-bold text-black">{subtotal}</p></div>
-                    <button onClick={handlepay} className="text-xl bg-blue-600 mr-4 px-4 py-2 text-white font-bold rounded-xl">Place Order</button>
+                    <div className="text-2xl text-white ml-4 flex gap-3 max-sm:text-xl max-sm:ml-1">Sub Total:<p className="font-bold text-black">{subtotal}</p></div>
+                    <button onClick={handlepay} className="text-xl bg-blue-600 mr-4 px-4 py-2 text-white font-bold rounded-xl max-sm:mr-1">Place Order</button>
                 </div>
             </div>
 
