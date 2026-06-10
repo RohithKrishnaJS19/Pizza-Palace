@@ -207,7 +207,7 @@ function Addproducts() {
                 {owner ? <p onClick={handlemanageadmin} className="cursor-pointer">Manage Admin</p> : ""}
             </div>
             <div className="bg-white w-full h-[100%] flex justify-center ">
-                <div className="bg-red-100  mt-30 mb-15 rounded-2xl flex flex-col justify-center items-center gap-3 p-10 max-sm:mt-15  max-sm:mb-15">
+                <div className="bg-red-100  mt-30 mb-15 rounded-2xl flex flex-col justify-center items-center gap-3 p-10 max-sm:mt-15  max-sm:mb-15 max-sm:w-[100%]">
                     <h1 className="font-bold text-3xl">New Pizza Details</h1>
                     <div>
                         <p className="font-bold">Name</p>
@@ -219,7 +219,7 @@ function Addproducts() {
                         <input type="number" onChange={handleamount} className="border-2 w-200 px-4 py-2 outline-none text-xl bg-[#F5F5F5] rounded max-sm:w-85 sm:max-lg:w-170" placeholder="Enter the amount"></input>
                         {Awarn ? <p className="text-red-500">Amount is required</p> : ""}
                     </div>
-                    <div className="w-full flex items-center justify-between max-sm:flex-col max-sm:items-start max-sm:gap-3 sm:max-lg:flex-col sm:max-lg:items-start sm:max-lg:gap-3">
+                    <div className="w-full flex items-center justify-between max-sm:flex-col max-sm:w-85 max-sm:items-start max-sm:gap-3 sm:max-lg:flex-col sm:max-lg:items-start sm:max-lg:gap-3">
                         <div>
                             <p className="font-bold">Category</p>
                             <select onChange={handlecategory} className="bg-[#F5F5F5] border-2 px-2 py-2 outline-none rounded">
@@ -245,8 +245,8 @@ function Addproducts() {
                         <input onChange={handleimage} accept="image/*" type="file" className="border-2 w-200 px-4 py-2 outline-none text-xl bg-[#F5F5F5] rounded max-sm:w-85 sm:max-lg:w-170"></input>
                         {Uwarn ? <p className="text-red-500">Please Select an Image</p> : ""}
                     </div>
-                    <div className="w-[100%]">
-                        <button onClick={handleaddproduct} className="bg-blue-600 font-bold text-white px-6 py-4 rounded flex items-center gap-2">Add Product</button>
+                    <div className="w-[100%] max-sm:w-85">
+                        <button onClick={handleaddproduct} className="bg-blue-600 font-bold text-white px-6 py-4 rounded flex items-center gap-2 ">Add Product</button>
                     </div>
                 </div>
             </div>
