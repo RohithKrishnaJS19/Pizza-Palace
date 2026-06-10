@@ -126,13 +126,13 @@ function Contact() {
                 <p className="cursor-pointer" onClick={handleorder}>Orders</p>
             </div>
             <div className="bg-white w-full h-[100%] flex justify-center">
-                <div className="bg-[#f4bcbc] mt-30 mb-15 rounded-2xl flex flex-col justify-center max-sm:justify-start gap-3 p-10 max-sm:mt-15 max-sm:mb-10">
+                <div className="bg-[#f4bcbc] mt-30 mb-15 rounded-2xl flex flex-col justify-center max-sm:justify-start gap-3 p-10 max-sm:px-5 max-sm:mt-15 max-sm:mb-20 max-sm:w-[95%] max-sm:mt-25">
                     <h1 className="font-bold text-3xl">How Can We Help you?</h1>
                     <p>We're here to help! Share your query, complaint, or feedback.</p>
                     <p>Our team will get back to you <span className="text-red-500">via email</span> as soon as possible.</p>
                     <div>
                         <p className="font-bold text-2xl mb-3">Message</p>
-                        <textarea onChange={handlemessage} value={message} className="border-2 w-200 h-60 px-4 py-2 outline-none text-xl bg-[#F5F5F5] rounded max-sm:w-85 max-sm:h-90 sm:max-lg:w-170" placeholder="Describe your query, complaint, or feedback here..."></textarea>
+                        <textarea onChange={handlemessage} value={message} className="border-2 w-200 h-60 px-4 py-2 outline-none text-xl bg-[#F5F5F5] rounded max-sm:w-[100%] max-sm:h-90 sm:max-lg:w-170" placeholder="Describe your query, complaint, or feedback here..."></textarea>
                     </div>
                     <div className="w-[100%]">
                         <button onClick={handlesend} className="bg-red-500 font-bold text-white px-6 py-4 rounded flex items-center gap-2"><i className="fa-solid fa-paper-plane" style={{ color: "rgb(255, 255, 255)" }}></i>Submit Request</button>
