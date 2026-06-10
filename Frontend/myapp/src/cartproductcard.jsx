@@ -2,7 +2,7 @@ function Cartproductcard(props) {
     return (
         <div className="bg-[#F5F5F5] basis-[40%] ml-13 mb-10 p-3 rounded max-sm:basis-[80%] max-sm:ml-0 max-sm:mb-0 sm:max-lg:ml-11">
             <div>
-                <img className="h-50 object-cover rounded-lg max-sm:h-45 sm:max-lg:h-40" src={props.product.imgurl}></img>
+                <img className="h-50 object-cover rounded-lg max-sm:w-[100%] sm:max-lg:h-40" src={props.product.imgurl}></img>
             </div>
             <div>
                 <p className="font-bold text-xl">{props.product.name}</p>
