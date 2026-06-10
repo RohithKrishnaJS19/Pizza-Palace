@@ -7,6 +7,7 @@ import auth from "./firebaseconfig";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import Skeletonproductcard from "./Skeletonproductcard";
+import { EmailAuthProvider, reauthenticateWithCredential, updatePassword } from "firebase/auth";
 
 function Home() {
     const API_URL = import.meta.env.VITE_API_URL
@@ -15,9 +16,9 @@ function Home() {
     const [token, settoken] = useState("")
     const [isAdmin, setisAdmin] = useState(false)
     const [loading, setloading] = useState(false)
-    const [owner,setowner] = useState(false)
+    const [owner, setowner] = useState(false)
     useEffect(function () {
-        const unsubscribe = onAuthStateChanged(auth,async function (user) {
+        const unsubscribe = onAuthStateChanged(auth, async function (user) {
             if (!user) {
                 navigate("/")
                 return
@@ -396,17 +397,153 @@ function Home() {
                 alert("Product Not Deleted")
             }
         }
-        catch{
+        catch {
             alert("Server Error")
         }
     }
 
-    function handlemanageadmin()
-    {
+    function handlemanageadmin() {
         navigate("/manageadmin")
     }
+
+    const [showcurrentpass, setshowcurrentpass] = useState(false)
+    function handlecurrenteye() {
+        setshowcurrentpass(!showcurrentpass)
+    }
+
+    const [shownewpass, setshownewpass] = useState(false)
+    function handleneweye() {
+        setshownewpass(!shownewpass)
+    }
+
+    const [changepasspopup, setchangepasspopup] = useState(false)
+    function handlechangepass() {
+        setchangepasspopup(true)
+        setslideprofile(!slideprofile)
+    }
+    function handlechangepasscancel() {
+        setchangepasspopup(false)
+    }
+
+    const [currentpass, setcurrentpass] = useState("")
+    function handlecurrentpass(event) {
+        setcurrentpass(event.target.value)
+    }
+
+    const [newpass, setnewpass] = useState("")
+    function handlenewpass(event) {
+        setnewpass(event.target.value)
+    }
+
+    const [confirmpass, setconfirmpass] = useState("")
+    function handleconfirmpass(event) {
+        setconfirmpass(event.target.value)
+    }
+
+    const [currentwarn, setcurrentwarn] = useState(false)
+    const [newpasswarn, setnewpasswarn] = useState(false)
+    const [newconfirmwarn, setnewconfirmwarn] = useState(false)
+    async function handleupdatepassword() {
+        setcurrentwarn(false)
+        setnewpasswarn(false)
+        setnewconfirmwarn(false)
+        if (currentpass.trim().length > 5 && newpass.trim().length > 5 && confirmpass.trim().length > 5 && confirmpass.trim() == newpass.trim()) {
+            try {
+                const user = auth.currentUser
+                console.log(user)
+                const credential = EmailAuthProvider.credential(user.email, currentpass)
+                await reauthenticateWithCredential(user, credential)
+                await updatePassword(user, newpass)
+                const retdata = await axios.post(`${API_URL}/updatepassword`, { uid: user.uid, newpass: newpass })
+                if (retdata.data) {
+                    alert("New Password Updated Successfully")
+                    setchangepasspopup(false)
+                }
+                else {
+                    console.error("Password updated in Firebase but failed to update MongoDB");
+                    alert("Password updated successfully")
+                }
+            }
+            catch (err) {
+                if (err.code == "auth/invalid-credential") {
+                    alert("Current Password is incorrect")
+                }
+                else {
+                    alert("Something went wrong while updating the password");
+                }
+            }
+        }
+        else {
+            if (currentpass.trim().length < 6) {
+                setcurrentwarn(true)
+            }
+            if (newpass.trim().length < 6) {
+                setnewpasswarn(true)
+            }
+            if (confirmpass.trim() != newpass.trim()) {
+                setnewconfirmwarn(true)
+            }
+        }
+    }
+
     return (
         <>
+            {/* Change Password */}
+            {
+                changepasspopup ? <div className="flex justify-center items-center bg-black/70 h-screen w-[100%] top-0 fixed z-40">
+                    <div className="bg-white w-[25%] rounded-xl p-8 max-sm:w-[95%] sm:max-lg:w-[60%]">
+                        <div className="border-b-2">
+                            <div className="flex flex-col items-center">
+                                <i className="fa-solid fa-lock text-red-500 text-5xl"></i>
+                                <h1 className="font-bold text-2xl p-3">Change Password</h1>
+                            </div>
+                            <div className="flex gap-2 pl-3">
+                                <h1 className="font-bold">Email:</h1>
+                                <p>{useremail}</p>
+                            </div>
+                        </div>
+                        <div className="flex flex-col gap-2 p-3 items-center">
+                            <div className="flex flex-col gap-2">
+                                <h1 className="font-bold">Current Password</h1>
+                                <div className=" flex gap-3 items-center border-1 p-2 rounded">
+                                    <input onChange={handlecurrentpass} id="password" type={showcurrentpass ? "text" : "password"} placeholder="Enter your current password" className="w-65 outline-none sm:max-lg:w-80"></input>
+                                    <i onClick={handlecurrenteye} className="fa-regular fa-eye" style={{ color: "black" }}></i>
+                                </div>
+                                {
+                                    currentwarn ? <p className="text-red-500 text-sm">This Field must Required</p> : ""
+                                }
+
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                <h1 className="font-bold">New Password</h1>
+                                <div className=" flex gap-3 items-center border-1 p-2 rounded">
+                                    <input onChange={handlenewpass} id="password" type={shownewpass ? "text" : "password"} placeholder="Enter your new password" className="w-65 outline-none sm:max-lg:w-80"></input>
+                                    <i onClick={handleneweye} className="fa-regular fa-eye" style={{ color: "black" }}></i>
+                                </div>
+                                {
+                                    newpasswarn ? <p className="text-red-500 text-sm">Minimum 6 characters Required</p> : ""
+                                }
+
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                <h1 className="font-bold">Confirm New Password</h1>
+                                <div className=" flex gap-3 items-center border-1 p-2 rounded">
+                                    <input onChange={handleconfirmpass} id="password" type="password" placeholder="Enter your confirm password" className="w-73 outline-none sm:max-lg:w-88"></input>
+                                </div>
+                                {
+                                    newconfirmwarn ? <p className="text-red-500 text-sm">New password and confirm password must be same</p> : ""
+                                }
+
+                            </div>
+                        </div>
+                        <div className="flex justify-end mt-5 gap-3">
+                            <button onClick={handlechangepasscancel} className="bg-white font-bold border-2 px-4 py-2 rounded">Cancel</button>
+                            <button onClick={handleupdatepassword} className="font-bold text-white bg-blue-500 px-5 py-2 rounded">Update Password</button>
+                        </div>
+                    </div>
+                </div> : ""
+            }
+
             {/* Cart */}
             <div className={`bg-[#FFE5D9]  rounded-2xl h-[100vh] w-[50%] fixed top-0 z-30 duration-1000 overflow-y-scroll max-sm:w-[100%] max-sm:duration-600 sm:max-lg:w-[80%] ${slide ? "-right-[100%]" : "right-0"} `}>
                 <div className="flex bg-red-500 justify-between p-4 fixed w-[50%] rounded-t-2xl  max-sm:w-[100%] sm:max-lg:w-[80%]">
@@ -513,7 +650,7 @@ function Home() {
                     {isAdmin ? <p className="cursor-pointer" onClick={handlemessage}>Message</p> : <p className="cursor-pointer" onClick={handlecontact}>Contact</p>}
                     <p className="cursor-pointer" onClick={handleorder}>Orders</p>
                     {isAdmin ? <p className="cursor-pointer" onClick={handleaddproducts}>Add products</p> : ""}
-                    {owner?<p onClick={handlemanageadmin} className="cursor-pointer">Manage Admin</p> : ""}
+                    {owner ? <p onClick={handlemanageadmin} className="cursor-pointer">Manage Admin</p> : ""}
                 </div>
                 <div className="flex gap-10 items-center max-sm:gap-5 sm:max-lg:gap-8">
                     <div>
@@ -528,6 +665,9 @@ function Home() {
                         <div className={` border border-black bg-white p-5 absolute top-10 rounded-2xl flex flex-col gap-3 duration-600 ${slideprofile ? "right-3" : "-right-96"}`}>
                             <div className="flex gap-3"><p className="font-bold">Name:</p>{username}</div>
                             <div className="flex gap-3"><p className="font-bold">Email:</p>{useremail}</div>
+                            <div className="flex">
+                                <button onClick={handlechangepass} className="bg-blue-500 text-white px-7 py-2 rounded cursor-pointer font-bold">Change Password</button>
+                            </div>
                             <div className="flex justify-end">
                                 <button onClick={handlelogout} className="bg-red-500 text-white px-3 py-2 rounded cursor-pointer font-bold">Logout</button>
                             </div>
@@ -541,7 +681,7 @@ function Home() {
                 {isAdmin ? <p className="cursor-pointer" onClick={handlemessage}>Message</p> : <p className="cursor-pointer" onClick={handlecontact}>Contact</p>}
                 <p className="cursor-pointer" onClick={handleorder}>Orders</p>
                 {isAdmin ? <p className="cursor-pointer" onClick={handleaddproducts}>Add products</p> : ""}
-                {owner?<p onClick={handlemanageadmin} className="cursor-pointer">Manage Admin</p> : ""}
+                {owner ? <p onClick={handlemanageadmin} className="cursor-pointer">Manage Admin</p> : ""}
             </div>
 
             {/* Hero Section */}

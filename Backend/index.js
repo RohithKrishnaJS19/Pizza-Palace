@@ -304,7 +304,7 @@ app.post("/orderdetails", async function (req, res) {
 // Fetching Order details From Database For Admin
 app.post("/adminorderdetails", async function (req, res) {
     try {
-        const orderdetails = await Orderdetails.find({delivery_status: { $ne: "Delivered" }})
+        const orderdetails = await Orderdetails.find({ delivery_status: { $ne: "Delivered" } })
         res.json(orderdetails)
     }
     catch (err) {
@@ -504,10 +504,29 @@ app.post("/updatestatus", async function (req, res) {
         const orderid = req.body.orderid
         const deliverystatus = req.body.deliverystatus
         await Orderdetails.findByIdAndUpdate(orderid, { delivery_status: deliverystatus })
-        res.json({success:true})
+        res.json({ success: true })
+    }
+    catch {
+        res.json({ success: false })
+    }
+})
+
+app.post("/updatepassword", async function (req, res) {
+    try {
+        const uid = req.body.uid
+        const newpass = req.body.newpass
+        const hashedpassword = await bcrypt.hash(newpass, 10)
+        const result = await Userdetails.updateOne({ firebase_uid: uid }, { $set: { password: hashedpassword } })
+        if(result.modifiedCount == 1)
+        {
+            res.json(true)
+        }
+        else{
+            res.json(false)
+        }
     }
     catch{
-        res.json({success:false})
+        res.json(false)
     }
 })
 
