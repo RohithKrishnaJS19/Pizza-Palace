@@ -3,7 +3,7 @@ import Orderitems from "./orderitems.jsx";
 function Ordercards(props) {
     const items = props.orderdetails.items || []
     return (
-        <div className="bg-blue-100 w-[80%] p-10 rounded-2xl mt-10 max-sm:w-[95%] max-sm:p-3 sm:max-lg:w-[95%]  sm:max-lg:p-5">
+        <div className="bg-blue-100 w-[80%] p-10 rounded-2xl mt-10 max-sm:w-[95%] max-sm:px-3 max-sm:py-7 sm:max-lg:w-[95%]  sm:max-lg:p-5">
             <div className="flex justify-between max-sm:flex-col max-sm:gap-3">
                 <div className="flex items-center gap-3">
                     <h1>Order ID:</h1>
@@ -67,7 +67,7 @@ function Ordercards(props) {
                     </div>
                     <div className="flex items-center gap-3 mt-5">
                         <h1>Delivery Status:</h1>
-                        <p className="font-bold max-sm:text-sm sm:max-lg:text-sm">{props.orderdetails.delivery_status}</p>
+                        <p className="font-bold text-orange-500  max-sm:text-xl sm:max-lg:text-sm">{props.orderdetails.delivery_status}</p>
                     </div>
                 </div>
             </div>

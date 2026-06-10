@@ -1,6 +1,6 @@
 function Productcard(props) {
     return (
-        <div className="basis-[23%] bg-[#F5F5F5] rounded-lg p-3 max-sm:p-2 max-sm:basis-[48%] sm:max-lg:basis-[31%]">
+        <div className="basis-[23%] bg-[#F5F5F5] rounded-lg p-3 max-sm:p-2 max-sm:basis-[48.7%] sm:max-lg:basis-[31%]">
             <div>
                 {
                     props.isAdmin ? <input onChange={function (event) {

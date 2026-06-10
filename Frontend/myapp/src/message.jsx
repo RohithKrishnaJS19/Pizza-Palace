@@ -156,6 +156,9 @@ function Message() {
                         <div className={` border border-black bg-white p-5 absolute top-10 rounded-2xl flex flex-col gap-3 duration-600 ${slideprofile ? "right-3" : "-right-96"}`}>
                             <div className="flex gap-3"><p className="font-bold">Name:</p>{username}</div>
                             <div className="flex gap-3"><p className="font-bold">Email:</p>{useremail}</div>
+                            <div className="flex">
+                                <button onClick={handlehome} className="bg-blue-500 text-white px-7 py-2 rounded cursor-pointer font-bold">Change Password</button>
+                            </div>
                             <div className="flex justify-end">
                                 <button onClick={handlelogout} className="bg-red-500 text-white px-3 py-2 rounded cursor-pointer font-bold">Logout</button>
                             </div>
